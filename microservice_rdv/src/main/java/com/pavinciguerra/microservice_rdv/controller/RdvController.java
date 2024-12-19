@@ -34,7 +34,7 @@ public class RdvController {
         return new ResponseEntity<>(rdvService.updateRdv(nouveauRdv.getId(), nouveauRdv), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id]")
+    @GetMapping("/{id}")
     @Operation(summary = "obtient rdv avec id")
     @ApiResponse(responseCode = "200", description = "rdv trouvé") // je le fais plus àça me fait chier
     @ApiResponse(responseCode = "404", description = "pas trouvé")
@@ -48,7 +48,7 @@ public class RdvController {
         return ResponseEntity.ok(rdvService.getAllRdv());
     }
 
-    @GetMapping
+    @GetMapping("/patient/{idPatient}")
     @Operation(summary = "récupérer tous les rdv d'un patient")
     public ResponseEntity<List<Rdv>> getRdvByPatient(@PathVariable Long idPatient) {
         return ResponseEntity.ok(rdvService.getRdvByPatient(idPatient));
