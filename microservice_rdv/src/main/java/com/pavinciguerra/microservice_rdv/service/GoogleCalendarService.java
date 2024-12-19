@@ -84,6 +84,7 @@ public class GoogleCalendarService {
         return "FALLBACK-" + System.currentTimeMillis();
     }
 
+    @HystrixCommand(fallbackMethod = "handleUpdateFailure")
     @Retryable
     public void updateCalendarEvent(String externalCalendarEventId, Rdv updatedRdv) {
         try {
@@ -102,6 +103,7 @@ public class GoogleCalendarService {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "handleDeleteFailure")
     @Retryable
     public void deleteCalendarEvent(String externalCalendarEventId) {
         try {
@@ -116,4 +118,12 @@ public class GoogleCalendarService {
         }
     }
 
+    // Méthodes de fallback pour Hystrix
+    public void handleUpdateFailure(String externalCalendarEventId, Rdv updatedRdv) {
+        log.warn("Échec de la mise à jour de l'événement dans Google Calendra");
+    }
+
+    public void handleDeleteFailure(String externalCalendarEventId) {
+        log.warn("Échec de la suppression de l'événement dans Google Calendar");
+    }
 }
