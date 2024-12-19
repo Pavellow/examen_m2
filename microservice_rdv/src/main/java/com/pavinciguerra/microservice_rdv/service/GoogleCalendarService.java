@@ -1,6 +1,9 @@
 package com.pavinciguerra.microservice_rdv.service;
 
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Value;
 import com.google.api.services.calendar.Calendar;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.pavinciguerra.microservice_rdv.model.Rdv;
@@ -10,6 +13,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.client.json.JsonFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -17,13 +21,26 @@ import java.time.LocalDateTime;
 @Service
 @Slf4j
 public class GoogleCalendarService {
-    private final Calendar googleCalendar;
+
+    @Value("${google.calendar.api.key}")
+    private String cleApi;
+
+    private Calendar googleCalendar;
     private static final String OBJET_RDV = "RDV MEDICAL";
     private static final int DUREE_RDV = 30; // minutes
     private static final String ID_CALENDRIER = "primary";
 
     public GoogleCalendarService(Calendar googleCalendar) {
-        this.googleCalendar = googleCalendar;
+        this.googleCalendar = new Calendar.Builder(
+                new NetHttpTransport(),
+                new GsonFactory(),
+                request -> {
+                    // bearer de merde
+                    request.getHeaders().set("Authorization", "Bearer " + cleApi);
+                })
+                .setApplicationName("Medical Office App")
+                .build();
+        )
     }
 
     @HystrixCommand(fallbackMethod = "handleCalendarFailure")
@@ -31,8 +48,6 @@ public class GoogleCalendarService {
     public String createCalendarEvent(Rdv rdv) {
         try {
             Event event = this.createEventFromRdv(rdv);
-
-            // Insertion de l'événement dans Google Calendar
             event = googleCalendar.events()
                     .insert(ID_CALENDRIER, event)
                     .execute();
@@ -55,7 +70,7 @@ public class GoogleCalendarService {
     }
 
     private String formatDescription(Rdv rdv) {
-        return String.format("RDV Patient: %d, Praticien: %d",
+        return String.format("RDV patient: %d, praticien: %d",
                 rdv.getIdPatient(),
                 rdv.getIdPraticien());
     }
@@ -64,6 +79,7 @@ public class GoogleCalendarService {
         return new EventDateTime().setDateTime(new DateTime(dateTime.toString()));
     }
 
+    // TODO : finir ce callback de con
     public String handleCalendarFailure() {
         return "a";
     }
