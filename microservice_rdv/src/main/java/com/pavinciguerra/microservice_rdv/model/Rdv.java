@@ -27,4 +27,6 @@ public class Rdv {
 
     private String calendrierEventId;
     private String status;
+
+    private String externalCalendarEventId;
 }

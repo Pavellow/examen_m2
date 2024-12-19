@@ -80,8 +80,40 @@ public class GoogleCalendarService {
         return new EventDateTime().setDateTime(new DateTime(dateTime.toString()));
     }
 
-    // TODO : trouver un meilleur fallback
     public String handleCalendarFailure(Rdv rdv) {
         return "FALLBACK-" + System.currentTimeMillis();
     }
+
+    @Retryable
+    public void updateCalendarEvent(String externalCalendarEventId, Rdv updatedRdv) {
+        try {
+            // Créer l'événement mis à jour
+            Event updatedEvent = createEventFromRdv(updatedRdv);
+
+            // Mettre à jour l'événement dans Google Calendar
+            googleCalendar.events()
+                    .update(ID_CALENDRIER, externalCalendarEventId, updatedEvent)
+                    .execute();
+
+            log.info("Événement mis à jour avec succès. ID: " + externalCalendarEventId);
+        } catch (IOException e) {
+            log.error("Erreur lors de la mise à jour de l'événement dans Google Calendar", e);
+            throw new RuntimeException("Erreur lors de la mise à jour de l'événement", e);
+        }
+    }
+
+    @Retryable
+    public void deleteCalendarEvent(String externalCalendarEventId) {
+        try {
+            googleCalendar.events()
+                    .delete(ID_CALENDRIER, externalCalendarEventId)
+                    .execute();
+
+            log.info("Événement supprimé avec succès. ID: " + externalCalendarEventId);
+        } catch (IOException e) {
+            log.error("Erreur lors de la suppression de l'événement dans Google Calendar", e);
+            throw new RuntimeException("Erreur lors de la suppression de l'événement", e);
+        }
+    }
+
 }
