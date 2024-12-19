@@ -1,3 +1,0 @@
-## Microservice praticien
-
-Lorem ipsum
