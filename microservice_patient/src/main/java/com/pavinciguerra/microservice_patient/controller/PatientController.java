@@ -24,7 +24,7 @@ public class PatientController {
     // TODO : trouver un refactor à cette méthode de merde
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-        return (ResponseEntity<Patient>) this.service.getPatientById(id)
+        return this.service.getPatientById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
