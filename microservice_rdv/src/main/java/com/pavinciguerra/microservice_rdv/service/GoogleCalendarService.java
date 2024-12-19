@@ -1,19 +1,70 @@
 package com.pavinciguerra.microservice_rdv.service;
 
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.Calendar;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.pavinciguerra.microservice_rdv.model.Rdv;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 
-import java.util.Calendar;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
 public class GoogleCalendarService {
     private final Calendar googleCalendar;
+    private static final String OBJET_RDV = "RDV MEDICAL";
+    private static final int DUREE_RDV = 30; // minutes
+    private static final String ID_CALENDRIER = "primary";
+
+    public GoogleCalendarService(Calendar googleCalendar) {
+        this.googleCalendar = googleCalendar;
+    }
 
     @HystrixCommand(fallbackMethod = "handleCalendarFailure")
     @Retryable
-    public String createCalendarEvent(Rdv rdv) {}
+    public String createCalendarEvent(Rdv rdv) {
+        try {
+            Event event = this.createEventFromRdv(rdv);
+
+            // Insertion de l'événement dans Google Calendar
+            event = googleCalendar.events()
+                    .insert(ID_CALENDRIER, event)
+                    .execute();
+
+            log.info("Événement créé avec succès. ID: " + event.getId());
+            return event.getId();
+        } catch (IOException e) {
+            log.error("Erreur lors de la création de l'événement dans Google Calendar", e);
+            throw new RuntimeException("Erreur lors de la création de l'événement", e);
+        }
+    }
+
+    private Event createEventFromRdv(Rdv rdv) {
+        LocalDateTime dateDebut = rdv.getRdvDateTime();
+        return new Event()
+                .setSummary(OBJET_RDV)
+                .setDescription(this.formatDescription(rdv))
+                .setStart(this.createEventDateTime(dateDebut))
+                .setEnd(this.createEventDateTime(dateDebut.plusMinutes(DUREE_RDV)));
+    }
+
+    private String formatDescription(Rdv rdv) {
+        return String.format("RDV Patient: %d, Praticien: %d",
+                rdv.getIdPatient(),
+                rdv.getIdPraticien());
+    }
+
+    private EventDateTime createEventDateTime(LocalDateTime dateTime) {
+        return new EventDateTime().setDateTime(new DateTime(dateTime.toString()));
+    }
+
+    public String handleCalendarFailure() {
+        return "a";
+    }
 }
