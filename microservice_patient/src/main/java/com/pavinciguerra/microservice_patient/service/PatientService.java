@@ -46,6 +46,6 @@ public class PatientService {
 
     public void deletePatient(Long id) {
         Optional<Patient> patientOpt = repo.findById(id);
-        patientOpt.ifPresent(repo::delete);  // Plus élégant avec ifPresent
+        patientOpt.ifPresent(repo::delete);
     }
 }
