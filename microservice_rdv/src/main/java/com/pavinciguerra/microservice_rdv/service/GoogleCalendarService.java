@@ -13,7 +13,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
-import com.google.api.client.json.JsonFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ public class GoogleCalendarService {
     @Value("${google.calendar.api.key}")
     private String cleApi;
 
-    private Calendar googleCalendar;
+    private final Calendar googleCalendar;
     private static final String OBJET_RDV = "RDV MEDICAL";
     private static final int DUREE_RDV = 30; // minutes
     private static final String ID_CALENDRIER = "primary";
@@ -88,10 +87,7 @@ public class GoogleCalendarService {
     @Retryable
     public void updateCalendarEvent(String externalCalendarEventId, Rdv updatedRdv) {
         try {
-            // Créer l'événement mis à jour
             Event updatedEvent = createEventFromRdv(updatedRdv);
-
-            // Mettre à jour l'événement dans Google Calendar
             googleCalendar.events()
                     .update(ID_CALENDRIER, externalCalendarEventId, updatedEvent)
                     .execute();
