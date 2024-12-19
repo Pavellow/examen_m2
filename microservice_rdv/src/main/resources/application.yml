@@ -1,0 +1,92 @@
+# Configuration du serveur
+server:
+  port: 8083
+  servlet:
+    context-path: /api
+
+# Configuration Spring
+spring:
+  application:
+    name: microservice-rendezvous
+  # Configuration Base de données
+  datasource:
+    url: jdbc:postgresql://localhost:19876/examen_microservice_m2_db
+    username: pavinciguerra
+    password: password
+    driver-class-name: org.postgresql.Driver
+  # Configuration JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  # Configuration Retry
+  retry:
+    maxAttempts: 3
+    maxDelay: 1000
+
+# Configuration Eureka Client
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+# Configuration Hystrix
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+      circuitBreaker:
+        requestVolumeThreshold: 10
+        errorThresholdPercentage: 50
+        sleepWindowInMilliseconds: 5000
+
+# Configuration Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  show-actuator: true
+  packages-to-scan: com.medical.appointmentservice.controller
+
+# Configuration Google Calendar
+google:
+  calendar:
+    application-name: microservices-java-springboot
+    calendar-id: primary
+    api:
+      #key: ${GOOGLE_CALENDAR_API_KEY}
+      # Penser à mettre en var d'env le google_calendar avec un export OU
+      key: FOO BAR FOO
+
+# Configuration des logs
+logging:
+  level:
+    com.medical.appointmentservice: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.netflix.discovery: INFO
+    com.netflix.hystrix: INFO
+
+# Configuration des métriques
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,hystrix.stream
+  endpoint:
+    health:
+      show-details: always
