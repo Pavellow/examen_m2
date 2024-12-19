@@ -23,6 +23,18 @@ public class PatientService {
     }
 
     public Patient savePatient(Patient patient) {
+        return (Patient) this.repo.save(patient);
+    }
+
+    public Patient updatePatient(Long id, Patient patientParam) throws Exception {
+        Patient patient = this.getPatientById(id).orElseThrow();
+        patient.setNom(patientParam.getNom());
+        patient.setPrenom(patientParam.getPrenom());
+        patient.setDateNaissance(patientParam.getDateNaissance());
+        patient.setEmail(patientParam.getEmail());
+        patient.setTelephone(patientParam.getTelephone());
+        patient.setAdresse(patientParam.getAdresse());
+
         return this.repo.save(patient);
     }
 }
