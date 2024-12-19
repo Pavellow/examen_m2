@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/examen_microservice_m2_db
+    url: jdbc:postgresql://localhost:19876/examen_microservice_m2_db
     username: pavinciguerra
-    password: motdepasse
+    password: password
   jpa:
     hibernate:
       ddl-auto: update
