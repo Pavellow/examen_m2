@@ -35,3 +35,11 @@ build/
 
 src/main/resources/application.yml
 src/main/resources/application.properties
+
+# Ignorer tous les fichiers .properties et .yml dans src/main/resources
+/src/main/resources/*.properties
+/src/main/resources/*.yml
+
+# Ou, pour ignorer tous les fichiers .properties et .yml dans tous les sous-dossiers de src/main/resources
+/src/main/resources/**/*.properties
+/src/main/resources/**/*.yml
