@@ -1,0 +1,73 @@
+# Configuration du serveur
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+# Configuration Spring
+spring:
+  application:
+    name: microservice-praticien
+
+  # Configuration Base de données
+  datasource:
+    url: jdbc:postgresql://localhost:19876/examen_microservice_m2_db
+    username: pavinciguerra
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  # Configuration JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # Configuration Retry
+  retry:
+    maxAttempts: 3
+    maxDelay: 1000
+
+# Configuration Eureka Client
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+# Configuration Hystrix
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+      circuitBreaker:
+        requestVolumeThreshold: 10
+        errorThresholdPercentage: 50
+        sleepWindowInMilliseconds: 5000
+
+# Configuration Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  show-actuator: true
+  packages-to-scan: com.pavinciguerra.microservice_praticien.controller
+
+# Configuration des logs
+logging:
+  level:
+    com.pavinciguerra.microservice_praticien: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
