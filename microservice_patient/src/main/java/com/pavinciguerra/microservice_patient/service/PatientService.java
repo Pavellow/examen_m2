@@ -18,7 +18,7 @@ public class PatientService {
         return this.repo.findAll();
     }
 
-    public Optional getPatientById(Long id) {
+    public Optional<Patient> getPatientById(Long id) {
         return this.repo.findById(id);
     }
 
