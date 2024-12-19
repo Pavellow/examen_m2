@@ -40,7 +40,7 @@ public class GoogleCalendarService {
                 })
                 .setApplicationName("Medical Office App")
                 .build();
-        )
+
     }
 
     @HystrixCommand(fallbackMethod = "handleCalendarFailure")
