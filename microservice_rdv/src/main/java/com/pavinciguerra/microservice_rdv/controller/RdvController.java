@@ -78,4 +78,15 @@ public class RdvController {
         return ResponseEntity.ok(updatedRdv);
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(summary = "del un rdv et son event sur google calendar")
+    public ResponseEntity<Void> deleteRdv(@PathVariable Long id) {
+        Rdv rdv = rdvService.getRdvById(id);
+        if (rdv.getExternalCalendarEventId() != null) {
+            googleCalendarService.deleteCalendarEvent(rdv.getExternalCalendarEventId());
+        }
+
+        rdvService.deleteRdv(id);
+        return ResponseEntity.noContent().build();
+    }
 }
