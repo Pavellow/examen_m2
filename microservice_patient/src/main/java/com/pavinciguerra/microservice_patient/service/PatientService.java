@@ -18,7 +18,7 @@ public class PatientService {
         return this.repo.findAll();
     }
 
-    public Optional<Patient> getPatientById(Long id) {
+    public Optional getPatientById(Long id) {
         return this.repo.findById(id);
     }
 
@@ -26,15 +26,28 @@ public class PatientService {
         return (Patient) this.repo.save(patient);
     }
 
-    public Patient updatePatient(Long id, Patient patientParam) throws Exception {
-        Patient patient = this.getPatientById(id).orElseThrow();
-        patient.setNom(patientParam.getNom());
-        patient.setPrenom(patientParam.getPrenom());
-        patient.setDateNaissance(patientParam.getDateNaissance());
-        patient.setEmail(patientParam.getEmail());
-        patient.setTelephone(patientParam.getTelephone());
-        patient.setAdresse(patientParam.getAdresse());
+    public Optional<Patient> updatePatient(Long id, Patient patientParam) {
+        Optional<Patient> patientOpt = this.repo.findById(id);
 
-        return this.repo.save(patient);
+        if (patientOpt.isPresent()) {
+            Patient patient = patientOpt.get();
+            patient.setNom(patientParam.getNom());
+            patient.setPrenom(patientParam.getPrenom());
+            patient.setDateNaissance(patientParam.getDateNaissance());
+            patient.setEmail(patientParam.getEmail());
+            patient.setTelephone(patientParam.getTelephone());
+            patient.setAdresse(patientParam.getAdresse());
+
+            return Optional.of(this.repo.save(patient));
+        }
+
+        return Optional.empty();
+    }
+
+    public void deletePatient(Long id) {
+        Optional<Patient> patientOpt = this.repo.findById(id);
+        if(patientOpt.isPresent()) {
+            this.repo.delete(patientOpt);
+        }
     }
 }
