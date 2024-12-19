@@ -65,10 +65,12 @@ springdoc:
 # Configuration Google Calendar
 google:
   calendar:
-    credentials:
-      file: /path/to/credentials.json
-    application-name: Medical-Appointments
+    application-name: microservices-java-springboot
     calendar-id: primary
+    api:
+      #key: ${GOOGLE_CALENDAR_API_KEY}
+      # Penser à mettre en var d'env le google_calendar avec un export OU
+      key: AIzaSyATc1-GaAIgXywsDWcKZNT-kvnjP7XEhrA
 
 # Configuration des logs
 logging:

@@ -3,7 +3,7 @@ package com.pavinciguerra.microservice_rdv.service;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Value;
+import org.springframework.beans.factory.annotation.Value;
 import com.google.api.services.calendar.Calendar;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.pavinciguerra.microservice_rdv.model.Rdv;
@@ -30,10 +30,11 @@ public class GoogleCalendarService {
     private static final int DUREE_RDV = 30; // minutes
     private static final String ID_CALENDRIER = "primary";
 
-    public GoogleCalendarService(Calendar googleCalendar) {
+    public GoogleCalendarService() {
         this.googleCalendar = new Calendar.Builder(
                 new NetHttpTransport(),
-                new GsonFactory(),
+                // le gson est une factory en singleton
+                GsonFactory.getDefaultInstance(),
                 request -> {
                     // bearer de merde
                     request.getHeaders().set("Authorization", "Bearer " + cleApi);
@@ -79,8 +80,8 @@ public class GoogleCalendarService {
         return new EventDateTime().setDateTime(new DateTime(dateTime.toString()));
     }
 
-    // TODO : finir ce callback de con
-    public String handleCalendarFailure() {
-        return "a";
+    // TODO : trouver un meilleur fallback
+    public String handleCalendarFailure(Rdv rdv) {
+        return "FALLBACK-" + System.currentTimeMillis();
     }
 }
