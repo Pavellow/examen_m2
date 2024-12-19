@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/examen_microservice_m2_db
+    username: pavinciguerra
+    password: motdepasse
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
