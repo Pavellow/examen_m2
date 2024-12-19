@@ -70,7 +70,7 @@ google:
     api:
       #key: ${GOOGLE_CALENDAR_API_KEY}
       # Penser à mettre en var d'env le google_calendar avec un export OU
-      key: TEST TEST TEST
+      key: FOO BAR
 
 # Configuration des logs
 logging:
